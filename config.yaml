@@ -1,0 +1,18 @@
+searches:
+  - name: data-engineer-dk
+    source: linkedin
+    keywords: data engineer
+    location: Denmark
+    geo_id: "104514075"
+    time_posted: r604800
+    experience: [1, 2]
+    job_type: [F, I]
+    workplace: [2, 3]
+
+  - name: analytics-engineer-dk
+    source: linkedin
+    keywords: analytics engineer
+    location: Denmark
+    geo_id: "104514075"
+    time_posted: r604800
+    experience: [1, 2]

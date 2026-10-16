@@ -8,3 +8,4 @@ class Job:
     location: str
     url: str
     posted_date: str
+    logo_url: str = ""

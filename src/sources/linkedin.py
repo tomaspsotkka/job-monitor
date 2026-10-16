@@ -5,17 +5,24 @@ from bs4 import BeautifulSoup
 
 BASE_URL = "https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search"
 
-def build_search_url() -> str:
+def build_search_url(search: dict) -> str:
     params = {
-        "keywords": "data engineer",
-        "location": "Denmark",
-        "f_TPR": "r604800",
-        "f_E": "1,2",
+        "keywords": search["keywords"],
+        "location": search["location"],
+        "geo_id": search["geo_id"],
+        "f_TPR": search["time_posted"],
+        "f_E": ",".join(str(x) for x in search["experience"]),
         "sortBy": "DD",
-        "start": 0,
-        "geoId": "104514075",
-        
+        "start": 0
     }
+    
+    #optional fields, only added if the search has them
+    if "job_type" in search:
+        params["f_JT"] = ",".join(str(x) for x in search["job_type"])
+    
+    if "workplace" in search:
+        params["f_WT"] = ",".join(str(x) for x in search["workplace"])
+    
     return f"{BASE_URL}?{urlencode(params)}"
 
 HEADERS = {"User-Agent": "Mozilla/5.0"}
@@ -56,12 +63,16 @@ def parse_jobs(html: str) -> list[Job]:
         posted_date_tag = card.find("time")
         posted_date = posted_date_tag["datetime"] if posted_date_tag else ""
         
+        logo_tag = card.find("img")
+        logo_url = logo_tag.get("data-delayed-url", "") if logo_tag else ""
+        
         jobs.append(Job(id=job_id, 
                         title=title, 
                         company=company, 
                         location=location, 
                         url=url,
-                        posted_date=posted_date))
+                        posted_date=posted_date,
+                        logo_url=logo_url))
     return jobs
         
     

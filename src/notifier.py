@@ -11,7 +11,7 @@ def send_message(text: str) -> None:
     response.raise_for_status()
     
 def job_to_embed(job: Job) -> dict:
-    return {
+    embed = {
         "title": job.title,
         "url": job.url,
         "color": 0x008000,
@@ -21,6 +21,11 @@ def job_to_embed(job: Job) -> dict:
         ],
         "footer": {"text": f"Posted {job.posted_date or 'unknown date'}"}
     }
+    
+    if job.logo_url:
+        embed["thumbnail"] = {"url": job.logo_url}
+        
+    return embed
     
 def send_jobs(jobs: list[Job]) -> None:
     if not jobs:

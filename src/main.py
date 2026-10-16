@@ -1,12 +1,17 @@
-from src.notifier import send_message
 from src.sources.linkedin import build_search_url, fetch_page, parse_jobs
-from bs4 import BeautifulSoup
 from pathlib import Path
 from src.notifier import send_jobs
+from src.config import load_config
 
 CACHE = Path("page_raw.html")
 
 if __name__ == "__main__":
+    config = load_config()
+    print(config)
+    
+    for search in config["searches"]:
+        print(build_search_url(search))
+    
     if CACHE.exists():
         html = CACHE.read_text(encoding="utf-8")
         print("Loaded HTML from cache")
