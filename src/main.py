@@ -2,12 +2,11 @@ from src.notifier import send_message
 from src.sources.linkedin import build_search_url, fetch_page, parse_jobs
 from bs4 import BeautifulSoup
 from pathlib import Path
+from src.notifier import send_jobs
 
 CACHE = Path("page_raw.html")
 
 if __name__ == "__main__":
-    #send_message("Hello from Job Bot!")
-    
     if CACHE.exists():
         html = CACHE.read_text(encoding="utf-8")
         print("Loaded HTML from cache")
@@ -20,4 +19,6 @@ if __name__ == "__main__":
     print(f"Found {len(jobs)} jobs")
     for job in jobs:
         print(job)
+        
+    send_jobs(jobs[:10])
     
