@@ -9,7 +9,7 @@ def build_search_url(search: dict) -> str:
     params = {
         "keywords": search["keywords"],
         "location": search["location"],
-        "geo_id": search["geo_id"],
+        "geoId": search["geo_id"],
         "f_TPR": search["time_posted"],
         "f_E": ",".join(str(x) for x in search["experience"]),
         "sortBy": "DD",
@@ -23,7 +23,7 @@ def build_search_url(search: dict) -> str:
     if "workplace" in search:
         params["f_WT"] = ",".join(str(x) for x in search["workplace"])
     
-    return f"{BASE_URL}?{urlencode(params)}"
+    return f"\n{BASE_URL}?{urlencode(params)}"
 
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 

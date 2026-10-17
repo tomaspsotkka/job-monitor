@@ -27,7 +27,7 @@ def job_to_embed(job: Job) -> dict:
         
     return embed
     
-def send_jobs(jobs: list[Job]) -> None:
+def send_jobs(jobs: list[Job], search_name: str) -> None:
     if not jobs:
         return
     
@@ -37,7 +37,7 @@ def send_jobs(jobs: list[Job]) -> None:
         embeds.append(job_to_embed(job))
         
     payload = {
-        "content": f"**{len(jobs)} new jobs** matching your search",
+        "content": f"**{len(jobs)} new jobs** matching your {search_name} search",
         "embeds": embeds
     }
     response = requests.post(WEBHOOK_URL, json=payload, timeout=10)
