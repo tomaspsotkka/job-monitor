@@ -2,6 +2,7 @@ from src.sources.linkedin import build_search_url, fetch_page, parse_jobs
 from pathlib import Path
 from src.notifier import send_jobs
 from src.config import load_config
+from src.filters import apply_filters
 import time
 
 CACHE_DIR = Path("cache")
@@ -28,10 +29,11 @@ if __name__ == "__main__":
         print(build_search_url(search))
         html = get_html(search)
         jobs = parse_jobs(html)
-        print(f"\n[{search['name']}] found {len(jobs)} jobs")
+        relevant = apply_filters(jobs, config["filters"])
+        print(f"\n[{search['name']}] {len(jobs)} found, {len(relevant)} after filters")
     
-        all_jobs.extend(jobs)
-        send_jobs(all_jobs[:10], search["name"])  
+        all_jobs.extend(relevant)
+        send_jobs(relevant[:10], search["name"])  
         
     print(f"\nTotal: {len(all_jobs)} jobs")
     

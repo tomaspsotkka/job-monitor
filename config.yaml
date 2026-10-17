@@ -16,3 +16,8 @@ searches:
     geo_id: "104514075"
     time_posted: r604800
     experience: [1, 2]
+
+filters:
+  title_exclude: [senior, lead, principal, manager, head of, architect]
+  title_include: []
+  company_exclude: []
