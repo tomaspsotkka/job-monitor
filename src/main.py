@@ -33,7 +33,7 @@ if __name__ == "__main__":
         print(f"\n[{search['name']}] {len(jobs)} found, {len(relevant)} after filters")
     
         all_jobs.extend(relevant)
-        send_jobs(relevant[:10], search["name"])  
+        send_jobs(relevant, search["name"])  
         
     print(f"\nTotal: {len(all_jobs)} jobs")
     
