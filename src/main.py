@@ -1,9 +1,15 @@
-from src.sources.linkedin import build_search_url, fetch_page, parse_jobs
+import os
+import time
 from pathlib import Path
-from src.notifier import send_jobs
+
+from dotenv import load_dotenv
+
 from src.config import load_config
 from src.filters import apply_filters
-import time
+from src.notifier import send_jobs
+from src.sources.linkedin import build_search_url, fetch_page, parse_jobs
+
+load_dotenv()
 
 CACHE_DIR = Path("cache")
 
@@ -26,6 +32,11 @@ if __name__ == "__main__":
     all_jobs = []
     
     for search in config["searches"]:
+        webhook_url = os.getenv(search["webhook"])
+        if not webhook_url:
+            print(f"[{search['name']}] no webhook found for {search['webhook']}, skipping")
+            continue
+        
         print(build_search_url(search))
         html = get_html(search)
         jobs = parse_jobs(html)
@@ -33,7 +44,8 @@ if __name__ == "__main__":
         print(f"\n[{search['name']}] {len(jobs)} found, {len(relevant)} after filters")
     
         all_jobs.extend(relevant)
-        send_jobs(relevant, search["name"])  
+            
+        send_jobs(relevant, search["name"], webhook_url)  
         
     print(f"\nTotal: {len(all_jobs)} jobs")
     

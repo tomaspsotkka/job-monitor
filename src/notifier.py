@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from datetime import datetime
 
 load_dotenv()
-WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
+WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_BOT_ALERTS")
 MAX_EMBEDS_PER_MESSAGE = 10
 MAX_RETRIES = 3
 
@@ -15,9 +15,9 @@ MAX_RETRIES = 3
 def _chunks(items: list, size: int) -> list[list]:
     return [items[i:i + size] for i in range(0, len(items), size)]
     
-def _post(payload: dict) -> None:
+def _post(url: str, payload: dict) -> None:
     for attempt in range(MAX_RETRIES):
-        response = requests.post(WEBHOOK_URL, json=payload, timeout=10)
+        response = requests.post(url, json=payload, timeout=10)
         
         if response.status_code == 429:
                 wait = response.json().get("retry_after", 1)
@@ -49,9 +49,9 @@ def job_to_embed(job: Job) -> dict:
     
 # method for testing
 def send_message(text: str) -> None:
-    _post({"content": text})
+    _post(WEBHOOK_URL ,{"content": text})
     
-def send_jobs(jobs: list[Job], search_name: str) -> None:
+def send_jobs(jobs: list[Job], search_name: str, webhook_url: str) -> None:
     if not jobs:
         return
     
@@ -62,7 +62,7 @@ def send_jobs(jobs: list[Job], search_name: str) -> None:
         if index == 0:
             payload["content"] = f"**{len(jobs)} new jobs** matching your {search_name} search. \nJob run: {datetime.now().strftime('%d-%m-%Y %H:%M')}"
         
-        _post(payload)
+        _post(webhook_url ,payload)
         
         time.sleep(2)
         

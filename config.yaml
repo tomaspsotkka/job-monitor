@@ -1,6 +1,7 @@
 searches:
   - name: data-engineer-dk
     source: linkedin
+    webhook: DISCORD_WEBHOOK_LINKEDIN_DATA_ENGINEER
     keywords: data engineer
     location: Denmark
     geo_id: "104514075"
@@ -11,6 +12,7 @@ searches:
 
   - name: analytics-engineer-dk
     source: linkedin
+    webhook: DISCORD_WEBHOOK_LINKEDIN_ANALYTICS_ENGINEER
     keywords: analytics engineer
     location: Denmark
     geo_id: "104514075"
