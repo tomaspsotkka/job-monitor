@@ -8,6 +8,7 @@ from src.config import load_config
 from src.filters import apply_filters
 from src.notifier import send_jobs
 from src.sources.linkedin import build_search_url, fetch_page, parse_jobs
+from src.state import load_state, save_state, mark_sent, filter_new, prune
 
 load_dotenv()
 
@@ -30,6 +31,8 @@ def get_html(search: dict) -> str:
 if __name__ == "__main__":
     config = load_config()
     all_jobs = []
+    state = load_state()
+    prune(state)
     
     for search in config["searches"]:
         webhook_url = os.getenv(search["webhook"])
@@ -41,11 +44,14 @@ if __name__ == "__main__":
         html = get_html(search)
         jobs = parse_jobs(html)
         relevant = apply_filters(jobs, config["filters"])
-        print(f"\n[{search['name']}] {len(jobs)} found, {len(relevant)} after filters")
+        new_jobs = filter_new(relevant, state, search["name"])
+        print(f"\n[{search['name']}] {len(jobs)} found, {len(relevant)} after filters, {len(new_jobs)} new")
     
-        all_jobs.extend(relevant)
-            
-        send_jobs(relevant, search["name"], webhook_url)  
+        send_jobs(new_jobs, search["name"], webhook_url)
+        mark_sent(new_jobs, state, search["name"])
+        save_state(state)
         
-    print(f"\nTotal: {len(all_jobs)} jobs")
+        all_jobs.extend(new_jobs) 
+        
+    print(f"\nTotal: {len(all_jobs)} new jobs")
     
