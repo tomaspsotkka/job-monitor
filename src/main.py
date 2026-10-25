@@ -8,7 +8,7 @@ from src.config import load_config
 from src.filters import apply_filters
 from src.notifier import send_jobs
 from src.sources.linkedin import build_search_url, fetch_page, parse_jobs
-from src.state import load_state, save_state, mark_sent, filter_new
+from src.state import load_state, save_state, mark_sent, filter_new, prune
 
 load_dotenv()
 
@@ -32,6 +32,7 @@ if __name__ == "__main__":
     config = load_config()
     all_jobs = []
     state = load_state()
+    prune(state)
     
     for search in config["searches"]:
         webhook_url = os.getenv(search["webhook"])

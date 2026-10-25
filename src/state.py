@@ -1,5 +1,5 @@
 import json
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 from src.models import Job
 
@@ -29,3 +29,14 @@ def mark_sent(jobs: list[Job], state: dict, search_name: str) -> None:
     today = date.today().isoformat()
     for job in jobs:
         seen[job.id] = today
+        
+def prune(state: dict, max_age_days: int = 30) -> None:
+    cutoff = (date.today() - timedelta(max_age_days)).isoformat()
+    for search_name, seen in state.items():
+        recent = {}
+        for job_id, day in seen.items():
+            if day >= cutoff:
+                recent[job_id] = day
+            state[search_name] = recent #writing the jobs that are still recdnt
+            
+            
