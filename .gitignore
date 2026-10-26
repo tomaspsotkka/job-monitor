@@ -6,6 +6,6 @@ __pycache__/
 .DS_Store
 
 page.html
-seen_jobs.local.json
+seen_jobs.json
 
 cache/
