@@ -13,16 +13,19 @@ from src.state import load_state, save_state, mark_sent, filter_new, prune
 load_dotenv()
 
 CACHE_DIR = Path("cache")
+USE_CACHE = os.getenv("USE_CACHE") == "true"
 
 def get_html(search: dict) -> str:
     cache_file = CACHE_DIR / f"{search['name']}.html"
     
-    if cache_file.exists():
+    if USE_CACHE and cache_file.exists():
         print(f"[{search['name']}] loaded from cache")
         return cache_file.read_text(encoding="utf-8")
     
     html = fetch_page(build_search_url(search))
-    cache_file.write_text(html, encoding="utf-8")
+    if USE_CACHE:
+        CACHE_DIR.mkdir(exist_ok=True) #creates cache/ folder since it's gitignored - only used for dev
+        cache_file.write_text(html, encoding="utf-8")
     print(f"[{search['name']}] fetched from LinkedIn")
     time.sleep(2)
     return html
@@ -40,7 +43,6 @@ if __name__ == "__main__":
             print(f"[{search['name']}] no webhook found for {search['webhook']}, skipping")
             continue
         
-        print(build_search_url(search))
         html = get_html(search)
         jobs = parse_jobs(html)
         relevant = apply_filters(jobs, config["filters"])
