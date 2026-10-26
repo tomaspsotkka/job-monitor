@@ -2,6 +2,7 @@ import os
 import requests
 import time
 
+from zoneinfo import ZoneInfo
 from src.models import Job
 from dotenv import load_dotenv
 from datetime import datetime
@@ -60,7 +61,7 @@ def send_jobs(jobs: list[Job], search_name: str, webhook_url: str) -> None:
         payload = {"embeds": embeds}
     
         if index == 0:
-            payload["content"] = f"**{len(jobs)} new jobs** matching your {search_name} search. \nJob run: {datetime.now().strftime('%d-%m-%Y %H:%M')}"
+            payload["content"] = f"**{len(jobs)} new jobs** matching your {search_name} search. \nJob run: {datetime.now(ZoneInfo("Europe/Copenhagen")).strftime('%d-%m-%Y %H:%M')}"
         
         _post(webhook_url ,payload)
         
