@@ -1,0 +1,57 @@
+name: Daily job monitor
+
+on:
+  schedule:
+    - cron: "17 7 * * *"
+      timezone: "Europe/Copenhagen"
+    - cron: "17 19 * * *"
+      timezone: "Europe/Copenhagen"
+  workflow_dispatch: # adds a button for manual runs
+
+permissions:
+  contents: write #lets the workflow push seen_jobs.json back
+
+concurrency:
+  group: daily-job-monitor # never run two at the same time
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v5
+    
+      - name: Check out the state branch
+        uses: actions/checkout@v5
+        with:
+          ref: state
+          path: state
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run the monitor
+        env:
+          STATE_FILE: state/seen_jobs.json
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_LINKEDIN_DATA_ENGINEER: ${{ secrets.DISCORD_WEBHOOK_LINKEDIN_DATA_ENGINEER }}
+          DISCORD_WEBHOOK_LINKEDIN_ANALYTICS_ENGINEER: ${{ secrets.DISCORD_WEBHOOK_LINKEDIN_ANALYTICS_ENGINEER }}
+        run: python -m src.main
+
+      - name: Save seen jobs
+        if: always()
+        working-directory: state
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add seen_jobs.json
+          git diff --staged --quiet || git commit -m "Update seen jobs"
+          git push
