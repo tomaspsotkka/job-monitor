@@ -1,9 +1,13 @@
 import json
+import os
 from datetime import date, timedelta
 from pathlib import Path
 from src.models import Job
+from dotenv import load_dotenv
 
-STATE_FILE = Path("seen_jobs.json")
+load_dotenv()
+
+STATE_FILE = Path(os.getenv("STATE_FILE", "seen_jobs.json"))
 
 def load_state() -> dict:
     if not STATE_FILE.exists():
