@@ -2,9 +2,9 @@ name: Daily job monitor
 
 on:
   schedule:
-    - cron: "17 7 * * *"
+    - cron: "17 3 * * *"
       timezone: "Europe/Copenhagen"
-    - cron: "17 19 * * *"
+    - cron: "17 15 * * *"
       timezone: "Europe/Copenhagen"
   workflow_dispatch: # adds a button for manual runs
 
@@ -37,6 +37,9 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements.txt
+
+      - name: Show trigger
+        run: echo "Triggered by ${{ github.event_name }}, schedule '${{ github.event.schedule }}'"
 
       - name: Run the monitor
         env:
