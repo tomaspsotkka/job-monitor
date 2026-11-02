@@ -18,6 +18,30 @@ searches:
     geo_id: "104514075"
     time_posted: r604800
     experience: [1, 2]
+    job_type: [F, I]
+    workplace: [2, 3]
+
+  - name: bi-engineer-dk
+    source: linkedin
+    webhook: DISCORD_WEBHOOK_LINKEDIN_BI_ENGINEER
+    keywords: '"BI engineer" OR "BI developer"'
+    location: Denmark
+    geo_id: "104514075"
+    time_posted: r604800
+    experience: [1, 2]
+    job_type: [F, I]
+    workplace: [2, 3]
+
+  - name: software-engineer-dk
+    source: linkedin
+    webhook: DISCORD_WEBHOOK_LINKEDIN_SOFTWARE_ENGINEER
+    keywords: '"software engineer" OR "software developer"'
+    location: Denmark
+    geo_id: "104514075"
+    time_posted: r604800
+    experience: [1, 2]
+    job_type: [F, I]
+    workplace: [2, 3]
 
 filters:
   title_exclude: [senior, lead, principal, manager, head of, architect]
