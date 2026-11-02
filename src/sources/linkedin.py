@@ -2,6 +2,7 @@ from urllib.parse import urlencode
 from src.models import Job
 import requests
 from bs4 import BeautifulSoup
+import time
 
 BASE_URL = "https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search"
 
@@ -25,12 +26,24 @@ def build_search_url(search: dict) -> str:
     
     return f"\n{BASE_URL}?{urlencode(params)}"
 
-HEADERS = {"User-Agent": "Mozilla/5.0"}
+HEADERS = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+    "Accept-Language": "en-US,en;q=0.9"}
+
+MAX_RETRIES = 3
+RETRY_WAITS = [30, 60]   # seconds to wait after the 1st and 2nd failure
 
 def fetch_page(url: str) -> str:
-    response = requests.get(url, headers=HEADERS, timeout = 15)
-    response.raise_for_status()
-    return response.text
+    for attempt in range(MAX_RETRIES):
+        response = requests.get(url, headers=HEADERS, timeout = 15)
+        
+        if response.status_code == 429 and attempt < MAX_RETRIES - 1:
+            wait = RETRY_WAITS[attempt]
+            print(f"LinkedIn returned 429, waiting {wait}s (attempt {attempt + 1}/{MAX_RETRIES})")
+            time.sleep(wait)
+            continue
+            
+        response.raise_for_status()
+        return response.text
 
 def parse_jobs(html: str) -> list[Job]:
     soup = BeautifulSoup(html, "html.parser")
